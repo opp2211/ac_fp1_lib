@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.maltsev.alishevcourse.model.Person;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -15,5 +14,25 @@ public class PersonDao {
     private final JdbcTemplate jdbcTemplate;
     public List<Person> getAll() {
         return jdbcTemplate.query("SELECT * FROM person", new BeanPropertyRowMapper<>(Person.class));
+    }
+
+    public void addNew(Person person) {
+        jdbcTemplate.update("INSERT INTO person (fio, year_of_birth) VALUES (?, ?)",
+                person.getFio(), person.getYearOfBirth());
+    }
+
+    public Person getById(int id) {
+        return jdbcTemplate.queryForObject("SELECT * FROM person WHERE id = ?",
+                new Object[]{id}, new BeanPropertyRowMapper<>(Person.class));
+    }
+
+    public void update(int id, Person person) {
+        person.setId(id);
+        jdbcTemplate.update("UPDATE person SET fio = ?, year_of_birth = ? WHERE id = ?",
+                person.getFio(), person.getYearOfBirth(), person.getId());
+    }
+
+    public void delete(int id) {
+        jdbcTemplate.update("DELETE FROM person WHERE id = ?", id);
     }
 }
