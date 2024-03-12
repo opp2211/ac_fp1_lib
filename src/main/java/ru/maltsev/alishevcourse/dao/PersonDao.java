@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import ru.maltsev.alishevcourse.model.Person;
 
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -34,5 +35,10 @@ public class PersonDao {
 
     public void delete(int id) {
         jdbcTemplate.update("DELETE FROM person WHERE id = ?", id);
+    }
+
+    public Optional<Object> getByFio(String fio) {
+        return Optional.ofNullable(jdbcTemplate.queryForObject("SELECT * FROM person WHERE fio = ?",
+                new Object[]{fio}, new BeanPropertyRowMapper<>(Person.class)));
     }
 }

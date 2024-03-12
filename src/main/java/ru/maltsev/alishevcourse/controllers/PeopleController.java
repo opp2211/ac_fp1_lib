@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.maltsev.alishevcourse.dao.BookDao;
 import ru.maltsev.alishevcourse.dao.PersonDao;
 import ru.maltsev.alishevcourse.model.Person;
+import ru.maltsev.alishevcourse.util.PersonValidator;
 
 import javax.validation.Valid;
 
@@ -17,6 +18,7 @@ import javax.validation.Valid;
 public class PeopleController {
     private final PersonDao personDao;
     private final BookDao bookDao;
+    private final PersonValidator personValidator;
 
     @GetMapping
     public String showAll(Model model) {
@@ -31,6 +33,7 @@ public class PeopleController {
     @PostMapping
     public String addNew(@ModelAttribute("person") @Valid Person person,
                          BindingResult bindingResult) {
+        personValidator.validate(person, bindingResult);
         if (bindingResult.hasErrors())
             return "people/new";
 
@@ -53,7 +56,7 @@ public class PeopleController {
 
     @PatchMapping("/{id}")
     public String update(@PathVariable int id, @ModelAttribute @Valid Person person, BindingResult bindingResult) {
-        System.out.println(person);
+        personValidator.validate(person, bindingResult);
         if (bindingResult.hasErrors())
             return "people/edit";
 
