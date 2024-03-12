@@ -5,6 +5,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import ru.maltsev.alishevcourse.dao.BookDao;
 import ru.maltsev.alishevcourse.dao.PersonDao;
 import ru.maltsev.alishevcourse.model.Person;
 
@@ -15,6 +16,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class PeopleController {
     private final PersonDao personDao;
+    private final BookDao bookDao;
 
     @GetMapping
     public String showAll(Model model) {
@@ -39,7 +41,7 @@ public class PeopleController {
     @GetMapping("/{id}")
     public String show(@PathVariable int id, Model model) {
         model.addAttribute("person", personDao.getById(id));
-        System.out.println(model.getAttribute("person"));
+        model.addAttribute("books", bookDao.getAllByHolderId(id));
         return "people/show";
     }
 
