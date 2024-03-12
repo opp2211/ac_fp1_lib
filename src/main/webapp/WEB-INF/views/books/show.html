@@ -7,7 +7,27 @@
 <body>
 <p th:text="${'Id = ' + book.getId()}"></p>
 <p th:text="${book.getName() + ', ' + book.getAuthor() + ', ' + book.getYear()}"></p>
+<br/>
 
+<div th:if="${holder == null}">
+    <form th:method="PATCH" th:action="@{/books/{id}/setHolder(id=${book.getId()})}">
+        <label for="select">Эта книга сводобна. Кому назначить её?</label>
+        <select name="holder_id" id="select">
+            <option th:each="person : ${people}" th:value="${person.getId()}" th:text="${person.getFio()}"></option>
+        </select>
+        <input type="submit" value="Назначить книгу">
+    </form>
+</div>
+<div th:unless="${holder == null}">
+    <p>
+        Книга сейчас у:
+        <a th:href="@{/people/{id}(id=${holder.getId()})}" th:text="${holder.getFio()}"></a>
+    </p>
+    <form th:method="PATCH" th:action="@{/books/{id}/removeHolder(id=${book.getId()})}">
+        <input type="submit" value="Освободить книгу">
+    </form>
+</div>
+<hr/>
 <a th:href="@{/books/{id}/edit(id=${book.getId()})}">Edit</a>
 <form th:method="DELETE" th:action="@{/books/{id}(id=${book.getId()})}">
     <input type="submit" value="Delete"/>

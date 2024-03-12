@@ -41,4 +41,12 @@ public class BookDao {
                 new BeanPropertyRowMapper<>(Book.class),
                 holderId);
     }
+
+    public void setHolder(int bookId, int holderId) {
+        jdbcTemplate.update("UPDATE book SET holder_id = ? WHERE id = ?", holderId, bookId);
+    }
+
+    public void removeHolder(int bookId) {
+        jdbcTemplate.update("UPDATE book SET holder_id = NULL WHERE id = ?", bookId);
+    }
 }
