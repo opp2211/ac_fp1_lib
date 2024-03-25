@@ -9,7 +9,7 @@
   <url>http://maven.apache.org</url>
 
   <properties>
-    <spring.version>5.2.1.RELEASE</spring.version>
+    <spring.version>5.3.5</spring.version>
   </properties>
 
   <dependencies>
@@ -40,6 +40,7 @@
       <artifactId>spring-webmvc</artifactId>
       <version>${spring.version}</version>
     </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-jdbc</artifactId>
@@ -68,6 +69,21 @@
       <artifactId>postgresql</artifactId>
       <version>42.7.2</version>
     </dependency>
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <version>5.4.28.Final</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-orm</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-jpa</artifactId>
+      <version>2.4.7</version>
+    </dependency>
 
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -76,19 +92,15 @@
       <scope>provided</scope>
     </dependency>
 
-
-
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>1.18.28</version>
       <scope>provided</scope>
     </dependency>
-
-
   </dependencies>
 
   <build>
-    <finalName>fp1_library</finalName>
+    <finalName>fp1_library</finalName><plugins><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-compiler-plugin</artifactId><configuration><source>8</source><target>8</target></configuration></plugin></plugins>
   </build>
 </project>

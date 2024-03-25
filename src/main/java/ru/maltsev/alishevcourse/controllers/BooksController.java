@@ -5,25 +5,27 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.maltsev.alishevcourse.dao.BookDao;
-import ru.maltsev.alishevcourse.dao.PersonDao;
 import ru.maltsev.alishevcourse.model.Book;
 import ru.maltsev.alishevcourse.model.Person;
+import ru.maltsev.alishevcourse.service.BookService;
+import ru.maltsev.alishevcourse.service.PersonService;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Objects;
 
 @Controller
 @RequestMapping("/books")
 @RequiredArgsConstructor
 public class BooksController {
-    private final BookDao bookDao;
-    private final PersonDao personDao;
+    private final BookService bookService;
+    private final PersonService personService;
 
     @GetMapping
-    public String showAll(Model model) {
-        List<Book> foundBooks = bookDao.getAll();
+    public String index(Model model,
+                        @RequestParam(value = "sort_by_year", defaultValue = "false") boolean sortByYear,
+                        @RequestParam(value = "page", required = false) Integer pageNum,
+                        @RequestParam(value = "items_per_page", required = false) Integer itemsPerPage) {
+        List<Book> foundBooks = bookService.findAll(pageNum, itemsPerPage, sortByYear);
         model.addAttribute("books", foundBooks);
         return "books/index";
     }
@@ -37,17 +39,15 @@ public class BooksController {
                          BindingResult bindingResult) {
         if (bindingResult.hasErrors())
             return "books/new";
-        bookDao.addNew(book);
+        bookService.addNew(book);
         return "redirect:/books";
     }
 
     @GetMapping("/{id}")
     public String show(@PathVariable int id, Model model) {
-        Book book = bookDao.getById(id);
-        List<Person> people = personDao.getAll();
-        Person holder = people.stream()
-                .filter(person -> Objects.equals(person.getId(), book.getHolderId()))
-                .findAny().orElse(null);
+        Book book = bookService.getById(id);
+        List<Person> people = personService.findAll();
+        Person holder = book.getHolder();
 
         model.addAttribute("book", book);
         model.addAttribute("people", people);
@@ -58,7 +58,7 @@ public class BooksController {
 
     @GetMapping("/{id}/edit")
     public String showEditForm(@PathVariable int id, Model model) {
-        model.addAttribute("book", bookDao.getById(id));
+        model.addAttribute("book", bookService.getById(id));
         return "books/edit";
     }
 
@@ -67,28 +67,38 @@ public class BooksController {
         if (bindingResult.hasErrors())
             return "books/edit";
 
-        bookDao.update(id, book);
+        bookService.update(id, book);
         return "redirect:/books";
     }
 
     @DeleteMapping("/{id}")
     public String delete(@PathVariable int id) {
-        bookDao.delete(id);
+        bookService.delete(id);
         return "redirect:/books";
     }
 
     @PatchMapping("/{id}/setHolder")
     public String setHolder(@PathVariable("id") int bookId,
                             @RequestParam("holder_id") int holderId) {
-        bookDao.setHolder(bookId, holderId);
+        bookService.setHolder(bookId, holderId);
 
         return "redirect:/books/{id}";
     }
 
     @PatchMapping("/{id}/removeHolder")
     public String removeHolder(@PathVariable int id) {
-        bookDao.removeHolder(id);
+        bookService.removeHolder(id);
 
         return "redirect:/books/{id}";
+    }
+
+    @GetMapping("/search")
+    public String showSearchPage() {
+        return "books/search";
+    }
+    @PostMapping("/search")
+    public String makeSearch(Model model, @RequestParam("search_text") String text) {
+        model.addAttribute("books", bookService.searchByTitle(text));
+        return "books/search";
     }
 }
